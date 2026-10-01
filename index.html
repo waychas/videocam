@@ -26,10 +26,9 @@
     <main>
       <section class="camera-wrap" aria-label="Camcorder viewfinder">
         <div class="screen"><canvas id="viewfinder" width="1280" height="720" aria-label="Camera preview"></canvas><span class="screen-corner tl"></span><span class="screen-corner tr"></span><span class="screen-corner bl"></span><span class="screen-corner br"></span></div>
-        <div class="screen-foot"><span>SP · 60 min</span><span>16:9 · VHS / 01</span><span id="screenDate">--.--.----</span></div>
       </section>
       <aside class="side">
-        <div class="control-label">PRESET · <span id="presetName">HOME VIDEO</span></div>
+        <div class="control-label">PRESET</div>
         <div class="looks" role="group" aria-label="Video look">
           <button class="look active" data-look="warm" aria-pressed="true">Home Video</button><button class="look" data-look="mono" aria-pressed="false">B&amp;W</button><button class="look" data-look="handycam" aria-pressed="false">Handycam</button><button class="look" data-look="mars" aria-pressed="false">Mars Log</button><button class="look" data-look="night" aria-pressed="false">NightShot</button><button class="look" data-look="found" aria-pressed="false">Found Footage</button>
         </div>
@@ -49,7 +48,7 @@
   <video id="camera" autoplay muted playsinline style="display:none"></video>
   <script>
     const canvas=document.querySelector('#viewfinder'),ctx=canvas.getContext('2d'),video=document.querySelector('#camera'),pixelCanvas=document.createElement('canvas'),imageCanvas=document.createElement('canvas');pixelCanvas.width=320;pixelCanvas.height=180;imageCanvas.width=320;imageCanvas.height=180;const pixelCtx=pixelCanvas.getContext('2d'),imageCtx=imageCanvas.getContext('2d');
-    const recordBtn=document.querySelector('#recordBtn'),recordText=document.querySelector('#recordText'),downloadBtn=document.querySelector('#downloadBtn'),message=document.querySelector('#message'),statusText=document.querySelector('#statusText'),presetName=document.querySelector('#presetName');
+    const recordBtn=document.querySelector('#recordBtn'),recordText=document.querySelector('#recordText'),downloadBtn=document.querySelector('#downloadBtn'),message=document.querySelector('#message'),statusText=document.querySelector('#statusText');
     let cameraStream=null,recorder=null,recordedUrl=null,look='warm',facing='user',recordingStarted=0,clockTimer=null,noise=[];
     for(let i=0;i<1500;i++)noise.push({x:Math.random(),y:Math.random(),a:Math.random()*.18});
     function dateString(){const d=new Date();return `${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}.${d.getFullYear()}`}
@@ -99,7 +98,6 @@
       ctx.shadowBlur=0;requestAnimationFrame(draw)
     }
     requestAnimationFrame(draw);
-    document.querySelector('#screenDate').textContent=dateString();
     async function startCamera(){if(!navigator.mediaDevices?.getUserMedia){message.textContent='Camera access needs a modern browser on HTTPS.';message.classList.add('error');return false}try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1280},height:{ideal:720}},audio:true});video.srcObject=cameraStream;await video.play();statusText.textContent='CAMERA READY';message.classList.remove('error');return true}catch(error){message.classList.add('error');message.textContent=error.name==='NotAllowedError'?'Camera permission was blocked. Allow camera access in your browser and try again.':'Could not start your camera. Check that it is connected and not in use by another app.';return false}}
     function createRecorder(stream){
       const formats=['video/mp4;codecs="avc1.424028,mp4a.40.2"','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
@@ -117,7 +115,7 @@
       recorder.start(250);recordingStarted=Date.now();recordBtn.classList.add('recording');recordText.textContent='Stop';statusText.textContent='RECORDING';message.textContent=recorder.mimeType.toLowerCase().includes('mp4')?'MP4 · REC':'WEBM · REC (MP4 NOT AVAILABLE)';downloadBtn.disabled=true;downloadBtn.classList.remove('ready');
     });
     downloadBtn.addEventListener('click',()=>{if(!recordedUrl)return;const extension=recorder?.mimeType.toLowerCase().includes('mp4')?'mp4':'webm',a=document.createElement('a');a.href=recordedUrl;a.download=`camcorder-${new Date().toISOString().replace(/[:.]/g,'-').slice(0,19)}.${extension}`;a.click()});
-    document.querySelectorAll('.look').forEach(btn=>btn.addEventListener('click',()=>{look=btn.dataset.look;presetName.textContent=btn.textContent.trim().toUpperCase();document.querySelectorAll('.look').forEach(b=>{const active=b===btn;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))})}));
+    document.querySelectorAll('.look').forEach(btn=>btn.addEventListener('click',()=>{look=btn.dataset.look;document.querySelectorAll('.look').forEach(b=>{const active=b===btn;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))})}));
     document.querySelector('#flipBtn').addEventListener('click',async()=>{if(recorder?.state==='recording'){message.textContent='Stop your recording before switching cameras.';return}facing=facing==='user'?'environment':'user';if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;await startCamera()}});
     window.addEventListener('beforeunload',()=>{cameraStream?.getTracks().forEach(t=>t.stop());if(recordedUrl)URL.revokeObjectURL(recordedUrl)});
   </script>
