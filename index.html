@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171815">
+  <meta name="description" content="A simple browser-based camcorder recorder with downloadable retro-styled video clips.">
+  <title>Camcorder</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23d9f36a'/%3E%3Cpath d='M10 13h20v15H10zM15 10h10v3H15z' fill='%23171815'/%3E%3Ccircle cx='20' cy='20.5' r='5.5' fill='%23d9f36a' stroke='%23171815' stroke-width='2'/%3E%3C/svg%3E">
+  <style>
+    :root{color-scheme:dark;--ink:#f0f0e9;--muted:#85877d;--lime:#d9f36a;--line:#34362e;--panel:#1d1f1b}
+    *{box-sizing:border-box}body{margin:0;background:#171815;color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh}
+    button{font:inherit;color:inherit}.shell{width:min(1100px,calc(100% - 48px));margin:0 auto;padding:34px 0 38px}
+    header{height:42px;display:flex;justify-content:space-between;align-items:center;margin-bottom:34px}.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.04em;font-size:18px}.brand-mark{width:29px;height:25px;border:1.5px solid var(--lime);border-radius:7px;position:relative}.brand-mark:before{content:'';position:absolute;left:8px;top:6px;width:9px;height:9px;border:1.5px solid var(--lime);border-radius:50%}.brand-mark:after{content:'';position:absolute;right:3px;top:3px;width:4px;height:4px;border-radius:50%;background:var(--lime)}.edition,.eyebrow,.meta,.hud,.tiny{font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.12em}.edition{font-size:10px;color:#999b90;display:flex;align-items:center;gap:9px}.edition span{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 9px #d9f36980}
+    main{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:40px;align-items:center}.camera-wrap{min-width:0}.frame-head{display:flex;align-items:center;justify-content:space-between;margin:0 2px 13px}.eyebrow{font-size:10px;color:#a4a697}.live-tag{font-family:'DM Mono',monospace;font-size:10px;color:#818378;letter-spacing:.1em}.live-tag i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#77786e;margin-right:7px;vertical-align:1px}.screen{position:relative;background:#292a24;border:1px solid #45463d;border-radius:4px;padding:9px;box-shadow:0 22px 70px #0005}.screen:before{content:'';position:absolute;inset:8px;border:1px solid #ffffff12;z-index:2;pointer-events:none}canvas{width:100%;display:block;aspect-ratio:16/10;background:#24251f;object-fit:cover}.screen-corner{position:absolute;z-index:3;width:19px;height:19px;opacity:.75;pointer-events:none}.screen-corner.tl{top:19px;left:19px;border-left:1px solid #f5f2df;border-top:1px solid #f5f2df}.screen-corner.tr{top:19px;right:19px;border-right:1px solid #f5f2df;border-top:1px solid #f5f2df}.screen-corner.bl{bottom:19px;left:19px;border-left:1px solid #f5f2df;border-bottom:1px solid #f5f2df}.screen-corner.br{bottom:19px;right:19px;border-right:1px solid #f5f2df;border-bottom:1px solid #f5f2df}.screen-foot{display:flex;justify-content:space-between;padding:12px 3px 0;color:#77796e;font:9px 'DM Mono',monospace;letter-spacing:.11em;text-transform:uppercase}
+    .side{padding:8px 0}.side h1{font-size:clamp(34px,4vw,48px);line-height:.99;letter-spacing:-.065em;margin:0 0 17px;font-weight:600}.side h1 em{font-style:normal;color:var(--lime)}.intro{font-size:13px;line-height:1.65;color:#9c9e93;margin:0 0 27px;max-width:250px}.control-label{font:9px 'DM Mono',monospace;color:#85877d;letter-spacing:.14em;text-transform:uppercase;margin:0 0 10px}.looks{display:flex;gap:7px;margin-bottom:24px}.look{border:1px solid #3b3d34;background:transparent;border-radius:3px;padding:9px 11px;font-size:11px;color:#aeb0a5;cursor:pointer;transition:.2s}.look:hover{border-color:#85877d}.look.active{border-color:var(--lime);color:var(--lime);background:#d9f36a0b}.controls{border-top:1px solid var(--line);padding-top:20px;display:flex;align-items:center;gap:12px}.record{display:flex;flex:1;justify-content:center;align-items:center;gap:10px;border:0;background:var(--lime);color:#1a1c16;border-radius:3px;padding:13px 14px;font-size:12px;font-weight:700;cursor:pointer;transition:transform .15s,background .15s}.record:hover{transform:translateY(-1px);background:#e4ff79}.record:disabled{opacity:.55;cursor:wait;transform:none}.record .dot{width:9px;height:9px;border-radius:50%;background:#282a20}.record.recording{background:#e05c4c;color:white}.record.recording .dot{background:#fff;animation:pulse 1.1s infinite}.icon-btn{width:43px;height:43px;display:grid;place-items:center;border:1px solid #41433a;background:transparent;border-radius:3px;cursor:pointer;color:#b9bbaf}.icon-btn:hover{border-color:#96988c;color:white}.icon-btn svg{width:17px;height:17px}.download{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:12px;border:1px solid #373930;border-radius:3px;background:transparent;color:#77796f;font-size:11px;cursor:not-allowed}.download.ready{color:var(--ink);border-color:#64675a;cursor:pointer}.download.ready:hover{border-color:var(--lime)}.download svg{width:14px;height:14px}.message{min-height:18px;margin:12px 0 0;font:10px 'DM Mono',monospace;color:#999b90;line-height:1.5}.message.error{color:#f19785}.privacy{border-top:1px solid var(--line);margin-top:28px;padding-top:16px;display:flex;gap:9px;color:#74766d;font-size:10px;line-height:1.55}.privacy svg{flex:0 0 auto;width:13px;height:13px;color:#a9ab9c;margin-top:1px}.bottom{display:flex;justify-content:space-between;margin-top:33px;padding-top:15px;border-top:1px solid #2e3029;color:#696b62;font:9px 'DM Mono',monospace;letter-spacing:.09em;text-transform:uppercase}.bottom strong{color:#8c8e82;font-weight:400}
+    @keyframes pulse{50%{opacity:.25}}@media(max-width:800px){.shell{width:min(680px,calc(100% - 32px));padding-top:22px}header{margin-bottom:25px}main{grid-template-columns:1fr;gap:26px}.side{display:grid;grid-template-columns:1fr 1fr;column-gap:20px;align-items:start}.side h1,.intro{grid-column:1/-1}.side h1{font-size:38px;margin-bottom:10px}.intro{max-width:400px;margin-bottom:21px}.side .control-label,.looks{grid-column:1/-1}.looks{margin-bottom:17px}.controls,.download,.message,.privacy{grid-column:1/-1}.controls{padding-top:15px}.privacy{margin-top:20px}.bottom{margin-top:25px}}@media(max-width:430px){.edition{font-size:8px}.shell{width:calc(100% - 24px)}.screen{padding:6px}.screen:before{inset:5px}.screen-corner{width:14px;height:14px}.screen-corner.tl,.screen-corner.tr{top:14px}.screen-corner.tl,.screen-corner.bl{left:14px}.screen-corner.tr,.screen-corner.br{right:14px}.screen-corner.bl,.screen-corner.br{bottom:14px}.side h1{font-size:34px}.bottom{font-size:8px}}
+  </style>
+  <style>
+    .shell{width:min(1000px,calc(100% - 32px));padding:24px 0 28px}header{height:auto;margin-bottom:16px}.topline{display:flex;justify-content:space-between;align-items:center}.edition,.brand,.side h1,.intro,.privacy,.bottom{display:none}main{display:block}.frame-head{margin-bottom:9px}.screen{padding:7px}canvas{aspect-ratio:16/9}.screen-foot{padding-top:8px}.side{padding:15px 0 0;display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:16px}.control-label{grid-column:1/-1;margin-bottom:9px}.looks{grid-column:1/-1;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin-bottom:13px}.look{min-height:39px;padding:8px 5px;font:10px 'DM Mono',monospace;letter-spacing:.03em;text-transform:uppercase}.controls{border:0;padding:0;display:flex;gap:8px}.record{min-width:142px;flex:none;padding:12px 16px}.icon-btn{height:42px;width:42px}.download{width:auto;min-width:136px;margin:0;padding:12px 14px}.message{grid-column:1/-1;margin-top:9px;min-height:15px;font-size:10px}.screen-foot span:first-child{visibility:hidden}@media(max-width:600px){.shell{width:calc(100% - 20px);padding-top:12px}.looks{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.side{grid-template-columns:1fr;gap:0}.controls{grid-row:3;margin-top:3px}.download{grid-row:4;width:100%;margin-top:8px}.message{grid-row:5}.screen-foot{font-size:8px}.look{font-size:9px}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topline"><span class="eyebrow">CAMCORDER</span><span class="live-tag"><i></i><span id="statusText">CAMERA OFF</span></span></header>
+    <main>
+      <section class="camera-wrap" aria-label="Camcorder viewfinder">
+        <div class="screen"><canvas id="viewfinder" width="1280" height="720" aria-label="Camera preview"></canvas><span class="screen-corner tl"></span><span class="screen-corner tr"></span><span class="screen-corner bl"></span><span class="screen-corner br"></span></div>
+        <div class="screen-foot"><span>SP · 60 min</span><span>16:9 · VHS / 01</span><span id="screenDate">--.--.----</span></div>
+      </section>
+      <aside class="side">
+        <div class="control-label">PRESET · <span id="presetName">HOME VIDEO</span></div>
+        <div class="looks" role="group" aria-label="Video look">
+          <button class="look active" data-look="warm" aria-pressed="true">Home Video</button><button class="look" data-look="mono" aria-pressed="false">B&amp;W</button><button class="look" data-look="handycam" aria-pressed="false">Handycam</button><button class="look" data-look="mars" aria-pressed="false">Mars Log</button><button class="look" data-look="night" aria-pressed="false">NightShot</button><button class="look" data-look="found" aria-pressed="false">Found Footage</button>
+        </div>
+        <div class="controls">
+          <button class="record" id="recordBtn"><span class="dot"></span><span id="recordText">Record</span></button>
+          <button class="icon-btn" id="flipBtn" aria-label="Flip camera" title="Flip camera">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 7h10l2 3v8H5v-8l2-3Z"/><circle cx="12" cy="13" r="3.4"/><path d="M8 4 5.5 6.5M16 4l2.5 2.5"/></svg>
+          </button>
+        </div>
+        <button class="download" id="downloadBtn" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg> Save video
+        </button>
+        <p class="message" id="message" role="status" aria-live="polite">Ready</p>
+      </aside>
+    </main>
+  </div>
+  <video id="camera" autoplay muted playsinline style="display:none"></video>
+  <script>
+    const canvas=document.querySelector('#viewfinder'),ctx=canvas.getContext('2d'),video=document.querySelector('#camera'),pixelCanvas=document.createElement('canvas'),imageCanvas=document.createElement('canvas');pixelCanvas.width=320;pixelCanvas.height=180;imageCanvas.width=320;imageCanvas.height=180;const pixelCtx=pixelCanvas.getContext('2d'),imageCtx=imageCanvas.getContext('2d');
+    const recordBtn=document.querySelector('#recordBtn'),recordText=document.querySelector('#recordText'),downloadBtn=document.querySelector('#downloadBtn'),message=document.querySelector('#message'),statusText=document.querySelector('#statusText'),presetName=document.querySelector('#presetName');
+    let cameraStream=null,recorder=null,recordedUrl=null,look='warm',facing='user',recordingStarted=0,clockTimer=null,noise=[];
+    for(let i=0;i<1500;i++)noise.push({x:Math.random(),y:Math.random(),a:Math.random()*.18});
+    function dateString(){const d=new Date();return `${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}.${d.getFullYear()}`}
+    function dateStamp(){return new Intl.DateTimeFormat('en-US',{month:'short',day:'2-digit',year:'numeric'}).format(new Date()).toUpperCase()}
+    function clockStamp(){return new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit'}).format(new Date())}
+    function draw(){
+      const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);
+      if(video.readyState>=2&&cameraStream){
+        const vw=video.videoWidth,vh=video.videoHeight,scale=Math.max(w/vw,h/vh),sw=vw/scale,sh=vh/scale,sx=(vw-sw)/2,sy=(vh-sh)/2;
+        if(look==='handycam'){
+          imageCtx.save();if(facing==='user'){imageCtx.translate(imageCanvas.width,0);imageCtx.scale(-1,1)}imageCtx.filter='saturate(1.18) contrast(1.12) brightness(1.05)';imageCtx.drawImage(video,sx,sy,sw,sh,0,0,imageCanvas.width,imageCanvas.height);imageCtx.restore();
+          ctx.save();ctx.imageSmoothingEnabled=false;ctx.drawImage(imageCanvas,0,0,w,h);ctx.restore();
+          ctx.save();ctx.globalAlpha=.13;ctx.filter='blur(7px)';ctx.drawImage(imageCanvas,-5,0,w,h);ctx.drawImage(imageCanvas,5,0,w,h);ctx.restore();
+        }else{ctx.save();if(facing==='user'){ctx.translate(w,0);ctx.scale(-1,1)}const filters={warm:'sepia(.24) saturate(.78) contrast(1.08) brightness(.92)',mono:'grayscale(1) contrast(1.12) brightness(.92)',mars:'saturate(.65) contrast(1.12) brightness(.88) hue-rotate(8deg)',night:'grayscale(1) sepia(1) hue-rotate(65deg) saturate(5) contrast(1.5) brightness(.68)',found:'saturate(.72) contrast(1.2) brightness(.78)'};ctx.filter=filters[look];ctx.drawImage(video,sx,sy,sw,sh,0,0,w,h);ctx.restore()}
+      }
+      else {ctx.fillStyle='#262820';ctx.fillRect(0,0,w,h);ctx.fillStyle='#d9f36a';ctx.font='500 18px monospace';ctx.textAlign='center';ctx.fillText('CAMERA OFF',w/2,h/2-12);ctx.fillStyle='#a5a793';ctx.font='13px monospace';ctx.fillText('PRESS RECORD TO START',w/2,h/2+20);ctx.textAlign='left'}
+      // Analog color cast, scan lines and fine grain are baked into the recorded canvas stream.
+      const tint=ctx.createLinearGradient(0,0,w,h);if(look==='warm'){tint.addColorStop(0,'rgba(220,153,83,.10)');tint.addColorStop(.55,'rgba(0,0,0,0)');tint.addColorStop(1,'rgba(122,68,43,.12)')}else if(look==='mars'){tint.addColorStop(0,'rgba(52,101,149,.16)');tint.addColorStop(1,'rgba(15,35,60,.15)')}else if(look==='night'){tint.addColorStop(0,'rgba(34,255,111,.24)');tint.addColorStop(1,'rgba(0,46,15,.38)')}else{tint.addColorStop(0,'rgba(220,225,215,.07)');tint.addColorStop(1,'rgba(20,20,20,.08)')}ctx.fillStyle=tint;ctx.fillRect(0,0,w,h);
+      ctx.fillStyle='rgba(0,0,0,.16)';for(let y=0;y<h;y+=5)ctx.fillRect(0,y,w,1);
+      for(const n of noise){n.x=Math.random();n.y=Math.random();ctx.fillStyle=`rgba(255,245,220,${n.a})`;ctx.fillRect(n.x*w,n.y*h,2,2)}
+      if(look==='found'&&Math.random()>.94){ctx.fillStyle='rgba(220,240,230,.22)';ctx.fillRect(0,Math.random()*h,w,2+Math.random()*5)}
+      const vignette=ctx.createRadialGradient(w/2,h/2,h*.22,w/2,h/2,h*.73);vignette.addColorStop(0,'rgba(0,0,0,0)');vignette.addColorStop(1,'rgba(0,0,0,.42)');ctx.fillStyle=vignette;ctx.fillRect(0,0,w,h);
+      const pad=42,elapsed=Math.floor((Date.now()-recordingStarted)/1000),tc=`00:00:${String(elapsed).padStart(2,'0')}`;ctx.textBaseline='top';ctx.shadowColor='#000';ctx.shadowBlur=4;ctx.lineJoin='round';
+      const text=(value,x,y,size,color='#f6f1dc',align='left',outlined=false)=>{ctx.font=`700 ${size}px monospace`;ctx.textAlign=align;if(outlined){ctx.lineWidth=4;ctx.strokeStyle='#10110f';ctx.strokeText(value,x,y)}ctx.fillStyle=color;ctx.fillText(value,x,y)};
+      const battery=(x,y)=>{ctx.lineWidth=3;ctx.strokeStyle='#f6f1dc';ctx.strokeRect(x,y,39,18);ctx.fillStyle='#f6f1dc';ctx.fillRect(x+42,y+5,4,8);ctx.fillRect(x+4,y+4,25,10)};
+      const pixelText=(value,x,y,size,color,align='left')=>{pixelCtx.font=`bold ${Math.round(size/4)}px monospace`;pixelCtx.textAlign=align;pixelCtx.textBaseline='top';pixelCtx.lineJoin='miter';pixelCtx.lineWidth=1.5;pixelCtx.strokeStyle='#111';pixelCtx.strokeText(value,x/4,y/4);pixelCtx.fillStyle=color;pixelCtx.fillText(value,x/4,y/4)};
+      if(look==='handycam'){
+        pixelCtx.clearRect(0,0,pixelCanvas.width,pixelCanvas.height);
+        pixelText('TBC',pad,pad+46,64,'#1dff1e');pixelText('SP',w-pad,pad+46,58,'#f7f5ea','right');pixelText(clockStamp(),w-pad,pad+103,43,'#f7f5ea','right');pixelText(dateStamp(),w-pad,h-pad-70,50,'#f7f5ea','right');
+        pixelCtx.fillStyle='#111';pixelCtx.fillRect((w-pad-55)/4,pad/4,14,7);pixelCtx.fillRect((w-pad-30)/4,pad/4+2,2,3);pixelCtx.fillStyle='#eee';pixelCtx.fillRect((w-pad-52)/4,pad/4+1,10,5);
+        if(recorder?.state==='recording')pixelText('● REC',pad,pad+113,29,'#ff5144');
+        ctx.save();ctx.imageSmoothingEnabled=false;ctx.drawImage(pixelCanvas,0,0,w,h);ctx.restore();
+        ctx.fillStyle='rgba(0,160,255,.8)';ctx.fillRect(0,0,3,h);ctx.fillStyle='rgba(255,45,20,.8)';ctx.fillRect(w-3,0,3,h);
+        ctx.fillStyle='rgba(255,255,255,.75)';ctx.fillRect(0,Math.round(h*.91),w,2);
+        for(let i=0;i<12;i++){if(Math.random()>.28){const y=h-30+i*2;ctx.fillStyle=i%3===0?'rgba(255,255,255,.9)':'rgba(58,235,240,.8)';ctx.fillRect(Math.random()*w,y,50+Math.random()*w,2+Math.random()*3)}}
+      }else if(look==='mars'){
+        ctx.strokeStyle='rgba(226,239,255,.8)';ctx.lineWidth=2;ctx.strokeRect(pad,pad,w-pad*2,h-pad*2);text('MISSION LOG',pad+14,pad+12,24);text('SOL 06',w-pad-14,pad+12,24,'#f6f1dc','right');text(clockStamp()+' UTC',pad+14,h-pad-42,20);text(recorder?.state==='recording'?'TRANSMITTING':'STANDBY',w-pad-14,h-pad-42,20,'#f6f1dc','right');
+      }else if(look==='night'){
+        ctx.strokeStyle='#a2ffb4';ctx.lineWidth=3;ctx.strokeRect(w/2-28,h/2-28,56,56);ctx.beginPath();ctx.moveTo(w/2-45,h/2);ctx.lineTo(w/2-29,h/2);ctx.moveTo(w/2+29,h/2);ctx.lineTo(w/2+45,h/2);ctx.moveTo(w/2,h/2-45);ctx.lineTo(w/2,h/2-29);ctx.moveTo(w/2,h/2+29);ctx.lineTo(w/2,h/2+45);ctx.stroke();text('NIGHTSHOT',pad,pad,24,'#b6ffbe');battery(w-pad-43,pad+2);text('IR',w-pad,pad+34,17,'#b6ffbe','right');if(recorder?.state==='recording')text('REC',pad,h-pad-30,22,'#ff554c');
+      }else if(look==='found'){
+        text('CAM 01',pad,pad,23);if(recorder?.state==='recording')text('● REC',w-pad,pad,22,'#ff5045','right');text(dateStamp()+' '+clockStamp(),pad,h-pad-31,19);ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(0,h-10,w,10);if(Math.random()>.5){const y=h-10+Math.random()*8;ctx.fillStyle='rgba(232,242,230,.7)';ctx.fillRect(Math.random()*w,y,40+Math.random()*220,2)}
+      }else if(look==='mono'){
+        text('B&W',pad,pad,23);text('CAM 01',w-pad,pad,20,'#f6f1dc','right');text(dateStamp(),pad,h-pad-30,18);if(recorder?.state==='recording')text(tc,w-pad,h-pad-30,18,'#f6f1dc','right');
+      }else{
+        text('PLAY',pad,pad,21);text('SP',pad,pad+31,21);battery(w-pad-43,pad+1);text('✳',w-pad,pad+32,20,'#f6f1dc','right');text(dateString(),pad,h-pad-30,19);if(recorder?.state==='recording')text(tc,w-pad,h-pad-30,19,'#f6f1dc','right');
+      }
+      ctx.shadowBlur=0;requestAnimationFrame(draw)
+    }
+    requestAnimationFrame(draw);
+    document.querySelector('#screenDate').textContent=dateString();
+    async function startCamera(){if(!navigator.mediaDevices?.getUserMedia){message.textContent='Camera access needs a modern browser on HTTPS.';message.classList.add('error');return false}try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1280},height:{ideal:720}},audio:true});video.srcObject=cameraStream;await video.play();statusText.textContent='CAMERA READY';message.classList.remove('error');return true}catch(error){message.classList.add('error');message.textContent=error.name==='NotAllowedError'?'Camera permission was blocked. Allow camera access in your browser and try again.':'Could not start your camera. Check that it is connected and not in use by another app.';return false}}
+    function createRecorder(stream){
+      const formats=['video/mp4;codecs="avc1.424028,mp4a.40.2"','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+      for(const mimeType of formats){if(!MediaRecorder.isTypeSupported(mimeType))continue;try{return new MediaRecorder(stream,{mimeType})}catch{}}
+      return new MediaRecorder(stream)
+    }
+    recordBtn.addEventListener('click',async()=>{
+      if(recorder?.state==='recording'){recorder.stop();recordBtn.disabled=true;return}
+      if(!cameraStream&&!await startCamera())return;
+      if(!canvas.captureStream||!window.MediaRecorder){message.textContent='Video recording is not supported in this browser. Try the latest Chrome, Edge, or Firefox.';message.classList.add('error');return}
+      const canvasStream=canvas.captureStream(30),audioTracks=cameraStream.getAudioTracks();audioTracks.forEach(track=>canvasStream.addTrack(track));let chunks=[];
+      try{recorder=createRecorder(canvasStream)}catch{message.textContent='This browser cannot create a video recording.';message.classList.add('error');return}
+      recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+      recorder.onstop=()=>{const blob=new Blob(chunks,{type:recorder.mimeType||'video/webm'}),format=recorder.mimeType.toLowerCase().includes('mp4')?'MP4':'WEBM';if(recordedUrl)URL.revokeObjectURL(recordedUrl);recordedUrl=URL.createObjectURL(blob);downloadBtn.disabled=false;downloadBtn.classList.add('ready');recordBtn.disabled=false;recordBtn.classList.remove('recording');recordText.textContent='Record';statusText.textContent='CAMERA READY';message.textContent=`${Math.floor((Date.now()-recordingStarted)/1000)} SEC · ${format} READY`;canvasStream.getTracks().filter(t=>t!==cameraStream.getAudioTracks()[0]).forEach(t=>t.stop())};
+      recorder.start(250);recordingStarted=Date.now();recordBtn.classList.add('recording');recordText.textContent='Stop';statusText.textContent='RECORDING';message.textContent=recorder.mimeType.toLowerCase().includes('mp4')?'MP4 · REC':'WEBM · REC (MP4 NOT AVAILABLE)';downloadBtn.disabled=true;downloadBtn.classList.remove('ready');
+    });
+    downloadBtn.addEventListener('click',()=>{if(!recordedUrl)return;const extension=recorder?.mimeType.toLowerCase().includes('mp4')?'mp4':'webm',a=document.createElement('a');a.href=recordedUrl;a.download=`camcorder-${new Date().toISOString().replace(/[:.]/g,'-').slice(0,19)}.${extension}`;a.click()});
+    document.querySelectorAll('.look').forEach(btn=>btn.addEventListener('click',()=>{look=btn.dataset.look;presetName.textContent=btn.textContent.trim().toUpperCase();document.querySelectorAll('.look').forEach(b=>{const active=b===btn;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))})}));
+    document.querySelector('#flipBtn').addEventListener('click',async()=>{if(recorder?.state==='recording'){message.textContent='Stop your recording before switching cameras.';return}facing=facing==='user'?'environment':'user';if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;await startCamera()}});
+    window.addEventListener('beforeunload',()=>{cameraStream?.getTracks().forEach(t=>t.stop());if(recordedUrl)URL.revokeObjectURL(recordedUrl)});
+  </script>
+</body>
+</html>
